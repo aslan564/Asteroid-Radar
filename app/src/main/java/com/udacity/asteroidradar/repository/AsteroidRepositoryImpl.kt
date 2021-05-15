@@ -1,6 +1,8 @@
 package com.udacity.asteroidradar.repository
 
 import android.util.Log
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.udacity.asteroidradar.api.*
 import com.udacity.asteroidradar.databasa.AsteroidDatabase
 import com.udacity.asteroidradar.model.PictureOfDay
@@ -9,7 +11,6 @@ import org.json.JSONObject
 
 class AsteroidRepositoryImpl(private val database: AsteroidDatabase) : AsteroidRepository {
     private val service = RetrofitClient
-
 
     override suspend fun fetchAllAsteroidApi(
         startDate: String
@@ -21,7 +22,7 @@ class AsteroidRepositoryImpl(private val database: AsteroidDatabase) : AsteroidR
 
                 data?.let { asteroids ->
                     Log.d("fetchAsteroid", "data: asteroids $asteroids")
-                    fetchAsteroid(asteroids)
+                    insertAsteroidRoom(asteroids)
                     return@let NetworkResult.success(asteroids)
                 } ?: NetworkResult.error("no  data", null)
 
@@ -35,15 +36,15 @@ class AsteroidRepositoryImpl(private val database: AsteroidDatabase) : AsteroidR
         }
     }
 
-    override suspend fun fetchAllAsteroidRoom(onComplete: (Status, List<Asteroid>) -> Unit) {
-        onComplete(Status.SUCCESS, database.asteroidDao().getAllAsteroids())
+    override fun getAllAsteroidRoom(): LiveData<List<Asteroid>> {
+        return database.asteroidDao().getAllAsteroids()
     }
 
-    override suspend fun fetchAllAsteroidRoomOrderByDate(onComplete: (Status, List<Asteroid>) -> Unit) {
-        onComplete(Status.SUCCESS, database.asteroidDao().getAllAsteroidsByDay())
+    override fun getAllAsteroidRoomOrderByDate(): LiveData<List<Asteroid>> {
+        return database.asteroidDao().getAllAsteroidsByDay()
     }
 
-    private suspend fun fetchAsteroid(asteroids: String) {
+    private suspend fun insertAsteroidRoom(asteroids: String) {
         val resAsteroid = JSONObject(asteroids)
         val data = parseAsteroidsJsonResult(resAsteroid)
         database.asteroidDao().deleteAsteroid()
@@ -51,15 +52,15 @@ class AsteroidRepositoryImpl(private val database: AsteroidDatabase) : AsteroidR
         Log.d("fetchJSONObject", "insert: asteroids $data")
     }
 
-    override suspend fun getAsteroidImage(): NetworkResult<PictureOfDay> {
+    override suspend fun fetchAsteroidImageApi(): NetworkResult<PictureOfDay> {
         return try {
             val response = service.asteroidImageService.getImageFromApi()
             if (response.isSuccessful && response.code() == 200) {
                 val data = response.body()
                 data?.let {
                     val imageObject = JSONObject(it)
-                   val imageData = parseJsonResultToImageClass(imageObject)
-                    Log.d("messageAsteroid", "fetchAllAsteroid: isSuccessful $imageData :yaradildi")
+                    val imageData = parseJsonResultToImageClass(imageObject)
+                    database.asteroidDao().insertPicture(imageData)
                     return@let NetworkResult.success(imageData)
                 } ?: NetworkResult.error(response.message() ?: "no data catch ex", null)
             } else {
@@ -71,8 +72,12 @@ class AsteroidRepositoryImpl(private val database: AsteroidDatabase) : AsteroidR
         }
     }
 
-    override suspend fun fetchLimitedAsteroidRoom(date:String,onComplete: (Status, List<Asteroid>) -> Unit) {
-        onComplete(Status.SUCCESS,database.asteroidDao().getLimitedAsteroidsByDay(date))
+    override fun getDayImage(): LiveData<PictureOfDay> {
+        return database.asteroidDao().getPictureOfDay()
+    }
+
+    override fun getLimitedAsteroidRoom(date: String): LiveData<List<Asteroid>> {
+        return database.asteroidDao().getLimitedAsteroidsByDay(date)
     }
 
     suspend fun delete() {

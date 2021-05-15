@@ -12,15 +12,14 @@ interface AsteroidDAO {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAsteroid(vararg asteroid: Asteroid)
 
-    @Query("SELECT * FROM asteroid_table")
-    suspend fun getAllAsteroids(): List<Asteroid>
+    @Query("SELECT * FROM asteroid_table ORDER BY codename ASC")
+    fun getAllAsteroids(): LiveData<List<Asteroid>>
 
-
-    @Query("SELECT * FROM asteroid_table ORDER BY  closeApproachDate ASC")
-    suspend fun getAllAsteroidsByDay(): List<Asteroid>
+    @Query("SELECT * FROM asteroid_table ORDER BY  closeApproachDate DESC")
+    fun getAllAsteroidsByDay(): LiveData<List<Asteroid>>
 
     @Query("SELECT * FROM asteroid_table WHERE closeApproachDate =:date LIMIT 7")
-    suspend fun getLimitedAsteroidsByDay(date: String): List<Asteroid>
+    fun getLimitedAsteroidsByDay(date: String): LiveData<List<Asteroid>>
 
     @Query("DELETE  FROM asteroid_table")
     suspend fun deleteAsteroid()
@@ -29,7 +28,7 @@ interface AsteroidDAO {
     suspend fun insertPicture(vararg pictureOfDay: PictureOfDay)
 
     @Query("SELECT * FROM picture_of_day")
-    suspend fun getPictureOfDay(): PictureOfDay
+    fun getPictureOfDay(): LiveData<PictureOfDay>
 
     @Query("DELETE  FROM picture_of_day")
     suspend fun deletePicture()

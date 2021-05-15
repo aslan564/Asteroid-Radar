@@ -9,9 +9,10 @@ import com.udacity.asteroidradar.model.pojo.AsteroidResponse
 import org.json.JSONObject
 
 interface AsteroidRepository {
-    suspend fun fetchAllAsteroidApi(startDate: String):NetworkResult<String>
-    suspend fun fetchAllAsteroidRoom(onComplete:(Status,List<Asteroid>)->Unit)
-    suspend fun fetchAllAsteroidRoomOrderByDate(onComplete:(Status,List<Asteroid>)->Unit)
-    suspend fun fetchLimitedAsteroidRoom(date:String,onComplete:(Status,List<Asteroid>)->Unit)
-    suspend fun getAsteroidImage():NetworkResult<PictureOfDay>
+    suspend fun fetchAllAsteroidApi(startDate: String): NetworkResult<String>
+    fun getAllAsteroidRoom(): LiveData<List<Asteroid>>
+    fun getAllAsteroidRoomOrderByDate(): LiveData<List<Asteroid>>
+    fun getLimitedAsteroidRoom(date: String): LiveData<List<Asteroid>>
+    suspend fun fetchAsteroidImageApi(): NetworkResult<PictureOfDay>
+    fun getDayImage(): LiveData<PictureOfDay>
 }

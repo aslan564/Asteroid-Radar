@@ -13,7 +13,7 @@ import java.time.LocalDate
 
 
 @RequiresApi(Build.VERSION_CODES.O)
-object DateLocal{
+object DateLocal {
     val START_DATE = LocalDate.now().toString()
     val END_DATE = LocalDate.now().plusDays(6).toString()
 }
@@ -26,7 +26,8 @@ class RefreshAsteroidDataWorker(
         val database = AsteroidDatabase(applicationContext)
         val repository = AsteroidRepositoryImpl(database)
         return try {
-           repository.fetchAllAsteroidApi(START_DATE)
+           // repository.fetchAllAsteroidApi(START_DATE)
+            repository.delete()
             Result.success()
         } catch (ex: HttpException) {
             Result.retry()

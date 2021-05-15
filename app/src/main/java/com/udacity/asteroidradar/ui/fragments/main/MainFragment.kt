@@ -2,37 +2,49 @@ package com.udacity.asteroidradar.ui.fragments.main
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.model.entity.Asteroid
 import com.udacity.asteroidradar.ui.fragments.main.adapter.AsteroidsAdapter
-import com.udacity.asteroidradar.util.Sorted
-import com.udacity.asteroidradar.util.statusVisibility
+import com.udacity.asteroidradar.util.SharedPreferenceManager
 import java.util.*
 
 class MainFragment : Fragment() {
 
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
+
+    private lateinit var viewModel: MainViewModel
+    private lateinit var factoty: MainViewModel.Factory
+
+
     private val adapterAsteroid by lazy {
         AsteroidsAdapter { asteroid: Asteroid ->
+
             val action = MainFragmentDirections.actionShowDetail(asteroid)
             findNavController().navigate(action)
         }
     }
 
-    private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
-    }
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = binding.root
+    ): View {
+        val view = binding.root
+        factoty = MainViewModel.Factory(requireActivity().application)
+        viewModel = ViewModelProvider(this@MainFragment, factoty).get(MainViewModel::class.java)
+
+
+
+        return view
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -40,33 +52,29 @@ class MainFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         bindUI()
+        observeDataAsteroid()
 
     }
 
     override fun onStart() {
         super.onStart()
-        observeDataAsteroid()
+
+        viewModel.refreshFirstData(SharedPreferenceManager.isLogin)
+
     }
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun bindUI(): Unit = with(binding) {
         lifecycleOwner = this@MainFragment
         viewModel = this@MainFragment.viewModel
         asteroidRecycler.adapter = adapterAsteroid
 
-
     }
 
     private fun observeDataAsteroid(): Unit = with(viewModel) {
-        getViewModelData(Sorted.ALL)
-        asteroidLIst.observe(viewLifecycleOwner,{
-            it?.let{list->
+        asteroidLIst.observe(viewLifecycleOwner, {
+            it?.let { list ->
                 adapterAsteroid.submitList(list)
-            }
-        })
-
-        uiState.observe(viewLifecycleOwner, {
-            it?.let { status ->
-                if (statusVisibility(status)) {
+                if (list.isNotEmpty()) {
                     binding.statusLoadingWheel.visibility = View.GONE
                 } else {
                     binding.statusLoadingWheel.visibility = View.VISIBLE
@@ -84,19 +92,25 @@ class MainFragment : Fragment() {
 
         when (item.itemId) {
             R.id.show_all_asteroid_menu -> {
-                getViewModelData(Sorted.DATE)
+                getViewModelData(viewModel.asteroidLIst)
             }
             R.id.show_saved_asteroid_menu -> {
-                getViewModelData(Sorted.ALL)
+                getViewModelData(viewModel.asteroidOrderByDayLIst)
             }
             R.id.show_today_asteroid_menu -> {
-                getViewModelData(Sorted.TODAY)
+                getViewModelData(viewModel.asteroidLimitedLIst)
             }
         }
         return true
     }
 
-    private fun getViewModelData(sorted:Sorted) {
-       viewModel.sortedAsteroidList(sorted)
+    private fun getViewModelData(list: LiveData<List<Asteroid>>) {
+        list.observe(viewLifecycleOwner,{
+            adapterAsteroid.submitList(it)
+        })
+    }
+
+    companion object {
+        private const val TAG = "MainFragments"
     }
 }

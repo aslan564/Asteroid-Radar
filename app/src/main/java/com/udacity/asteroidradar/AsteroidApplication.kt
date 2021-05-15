@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.work.*
 import com.udacity.asteroidradar.util.Constants.WORK_NAME
+import com.udacity.asteroidradar.util.SharedPreferenceManager
 import com.udacity.asteroidradar.work.RefreshAsteroidDataWorker
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -17,6 +18,7 @@ class AsteroidApplication: Application() {
 
     override fun onCreate() {
         super.onCreate()
+        SharedPreferenceManager.instance(this)
         delayInit()
     }
 
