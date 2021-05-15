@@ -2,7 +2,6 @@ package com.udacity.asteroidradar
 
 import android.app.Application
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.work.*
 import com.udacity.asteroidradar.util.Constants.WORK_NAME
 import com.udacity.asteroidradar.util.SharedPreferenceManager
