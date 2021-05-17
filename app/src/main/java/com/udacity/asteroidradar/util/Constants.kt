@@ -14,7 +14,3 @@ object Constants {
     const val JSON_EARTH_OBJECTS = "nearEarthObjects"
 
 }
-
-enum class Sorted{
-    ALL,TODAY,DATE
-}

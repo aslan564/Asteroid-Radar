@@ -17,12 +17,12 @@ import retrofit2.converter.scalars.ScalarsConverterFactory
 import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
-    private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+   // private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
 
 
     private val okHttpClientBuilder = OkHttpClient.Builder()
     private var retrofit: Retrofit? = null
-    private const val API_KEY = "EGSzPhhpC5iFb0mqVp5H9GpDA1r5SX79OoJeIr9J"
+    private const val API_KEY = "Your api key"
     private val requestInterceptor = Interceptor { chain ->
 
         val url = chain.request()

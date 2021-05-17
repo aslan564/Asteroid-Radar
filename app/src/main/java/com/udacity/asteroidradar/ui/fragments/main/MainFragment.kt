@@ -2,7 +2,6 @@ package com.udacity.asteroidradar.ui.fragments.main
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -21,7 +20,7 @@ class MainFragment : Fragment() {
     private val binding by lazy { FragmentMainBinding.inflate(layoutInflater) }
 
     private lateinit var viewModel: MainViewModel
-    private lateinit var factoty: MainViewModel.Factory
+    private lateinit var factoty: MainViewModelFactory
 
 
     private val adapterAsteroid by lazy {
@@ -38,7 +37,7 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = binding.root
-        factoty = MainViewModel.Factory(requireActivity().application)
+        factoty = MainViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this@MainFragment, factoty).get(MainViewModel::class.java)
 
 
