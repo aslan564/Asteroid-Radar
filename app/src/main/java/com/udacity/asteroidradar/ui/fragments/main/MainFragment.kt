@@ -37,10 +37,9 @@ class MainFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val view = binding.root
+
         factoty = MainViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this@MainFragment, factoty).get(MainViewModel::class.java)
-
-
 
         return view
     }

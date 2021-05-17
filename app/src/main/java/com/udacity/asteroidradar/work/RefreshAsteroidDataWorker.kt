@@ -26,8 +26,7 @@ class RefreshAsteroidDataWorker(
         val database = AsteroidDatabase(applicationContext)
         val repository = AsteroidRepositoryImpl(database)
         return try {
-           // repository.fetchAllAsteroidApi(START_DATE)
-            repository.delete()
+            repository.fetchAllAsteroidApi(START_DATE)
             Result.success()
         } catch (ex: HttpException) {
             Result.retry()
