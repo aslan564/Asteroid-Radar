@@ -60,6 +60,7 @@ class AsteroidRepositoryImpl(private val database: AsteroidDatabase) : AsteroidR
                 data?.let {
                     val imageObject = JSONObject(it)
                     val imageData = parseJsonResultToImageClass(imageObject)
+                    database.asteroidDao().deletePicture()
                     database.asteroidDao().insertPicture(imageData)
                     return@let NetworkResult.success(imageData)
                 } ?: NetworkResult.error(response.message() ?: "no data catch ex", null)
