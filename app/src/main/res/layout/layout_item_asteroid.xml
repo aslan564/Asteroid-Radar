@@ -30,7 +30,7 @@
             app:layout_constraintBottom_toTopOf="@+id/tv_asteroid_date"
             app:layout_constraintStart_toStartOf="@+id/tv_asteroid_date"
             app:layout_constraintTop_toTopOf="parent"
-            tools:text="hkdhasdashjd" />
+            tools:text="asteroid.closeApproachDate" />
 
         <TextView
             android:id="@+id/tv_asteroid_date"
@@ -44,7 +44,7 @@
             app:layout_constraintEnd_toStartOf="@+id/image_view_status"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_asteroid_name"
-            tools:text="hkdhas4564564dashjd" />
+            tools:text="asteroid.closeApproachDate" />
 
         <ImageView
             android:id="@+id/image_view_status"
